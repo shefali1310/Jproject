@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        header {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <div class="main">
-<h1> Instagram Clone</h1>
-<h3> Sign Up</h3>
-    <h4> {{ today }} </h4>
+<h1 align="center"> Instagram Clone</h1>
+<h3 align="center"> Sign Up</h3>
+    <h4 >{{ today }} </h4>
 </div>
 <form method="post">
     {% csrf_token %}
        <div>
-           <label for="username">Username: </label>
+           <label for="username" >Username: </label>
            <input id="username" type="text" name="username" value="">
        </div>
 

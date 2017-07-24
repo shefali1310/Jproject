@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import datetime
-from forms import SignUpForm
-from django.contrib.auth.hashers import make_password
-
+from forms import SignUpForm, LoginForm
+from django.contrib.auth.hashers import make_password,check_password
+from models import User, SessionToken
 
 # Create your views here.
 
@@ -35,7 +35,7 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = UserModel.objects.filter(username=username).first()
+            user = User.objects.filter(username=username).first()
 
             if user:
                 # Check for the password
@@ -53,6 +53,10 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, 'login.html', {'form': form})
+
+
+def feed_view(request):
+    return render(request, 'feed.html')
 
 def check_validation(request):
   if request.COOKIES.get('session_token'):
