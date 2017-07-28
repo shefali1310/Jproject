@@ -2,10 +2,11 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
-import datetime
+from datetime import timedelta
 from forms import SignUpForm, LoginForm
 from django.contrib.auth.hashers import make_password,check_password
-from models import User, SessionToken
+from models import User, SessionToken, Post
+from django.utils import timezone
 
 # Create your views here.
 
