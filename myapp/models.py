@@ -28,8 +28,8 @@ class SessionToken(models.Model):
 
 
 
-class Post(models.Models):
-    user = models.ForeignKEy(UserModdel)
+class Post(models.Model):
+    user = models.ForeignKey(User)
     image = models.FileField()
     image_url = models.CharField(max_length=255)
     caption = models.CharField(max_length=240)
@@ -46,19 +46,19 @@ class Post(models.Models):
         return CommentModel.objects.filter(post=self).order_by('-created_on')
 
 class clarifai_data(models.Model):
-	user = models.ForeignKey(UserModel)
+	user = models.ForeignKey(User)
 	clarifai_data = models.CharField(max_length=100)
 	created_on = models.DateTimeField(auto_now_add=True)
 
 class LikeModel(models.Model):
-	user = models.ForeignKey(UserModel)
-	post = models.ForeignKey(PostModel)
+	user = models.ForeignKey(User)
+	post = models.ForeignKey(Post)
 	created_on = models.DateTimeField(auto_now_add=True)
 	updated_on = models.DateTimeField(auto_now=True)
 
 class CommentModel(models.Model):
-	user = models.ForeignKey(UserModel)
-	post = models.ForeignKey(PostModel)
+	user = models.ForeignKey(User)
+	post = models.ForeignKey(Post)
 	comment_text = models.CharField(max_length=555)
 	created_on = models.DateTimeField(auto_now_add=True)
 	updated_on = models.DateTimeField(auto_now=True)

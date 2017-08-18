@@ -1,22 +1,56 @@
 <!DOCTYPE html>
-
+<html lang="en">
 <head>
-    <title>Post</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}" >
+    <meta charset="UTF-8">
+    <title>POST</title>
 </head>
-
+<style>
+body {
+    text-align:center;
+     background: mediumspringgreen;
+}input[type="submit"] {
+           background: black;
+            color:white;
+            border: 0px;
+            font-size: smaller;
+            border-radius: 15%;
+            font-size: 18px;
+            padding: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 16px;
+}
+       h1 {
+            color: black;
+            font-size: 55px;
+ }
+        input[type="text"] {
+            font-size: smaller;
+            width: 250px;
+            height: 25px;
+            background: khaki;
+            border: 0px;
+            padding: 10px 10px 10px 10px;
+            margin-bottom: 10px;
+  }
+          label {
+            color: black;
+            font-size: 20px;
+            color: chocolate;
+            padding: 10px 10px 10px 10px;
+   }
+</style>
 <body>
-    <div id="header"> Instagram</div>
-    <div id="heading1">Upload Media</div>
-    <div align="center">
-        <form method="post" enctype="multipart/form-data" id="form" style="width:500px;">
-            {% csrf_token %}
-            <input id="image" name="image" type="file"  value={{ image }}><br>
-            <input id="caption" name="caption" type="text" placeholder="Caption" size="30" value={{ caption }}><br>
-            <input type="submit" class="button" value="Add Image">
-        </form>
-    </div>
-</body>
 
+
+    <h4>{{ message }} </h4>
+        <br>
+
+<form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+    <h1>Posting an Image</h1>
+      {{ form }}
+      <input type="submit" class="btn btn-default" value="Add a picture">
+   </form>
+</body>
 </html>

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-
 from datetime import datetime
 from django.shortcuts import render, redirect
 from datetime import timedelta
 from Jproject.settings import BASE_DIR
-from forms import SignUpForm, LoginForm, PostForm, LikeForm, CommentForm
+from forms import SignUpForm, LoginForm, PostForm, LikeForm, CommentForm, SearchForm
 from django.contrib.auth.hashers import make_password,check_password
-from models import User, SessionToken, PostModel, LikeModel, CommentModel
+from models import User, SessionToken, Post, LikeModel, CommentModel
 from django.http import HttpResponse
 from django.utils import timezone
 
@@ -38,10 +37,10 @@ def signup_view(request):
     elif request.method == 'GET':
         form = SignUpForm()
 
-    today = datetime.date.today()
-    return render(request, 'index.html', {'form': form, 'today': today})
+    return render(request, 'index.html', {'form': form})
 
 def login_view(request):
+    response_data = {}
     if request.method == "POST":
         form = LoginForm(request.POST)
 
@@ -63,9 +62,9 @@ def login_view(request):
                     response_data['message'] = 'Incorrect Password!'
 
     elif request.method == "GET":
-        form = LoginForm()
+       form = LoginForm()
 
-    return render(request, 'login.html', response_data)
+    return render(request, 'login.html' , response_data )
 
 
 def post_view(request):
@@ -77,12 +76,12 @@ def post_view(request):
             if form.is_valid():
                 image = form.cleaned_data.get('image')
                 caption = form.cleaned_data.get('caption')
-                post = PostModel(user=user, image=image, caption=caption)
+                post = Post(user=user, image=image, caption=caption)
                 post.save()
 
 
 
-                path = str(BASE_DIR + post.image.url)
+                path = str(BASE_DIR + '/' + post.image.url)
 
                 client = ImgurClient("1d5ea33b83cf0b8","ec342f2708eb4bfede86e5a9bc190684daaf97ad" )
                 post.image_url = client.upload_from_path(path, anon=True)['link']
@@ -106,11 +105,29 @@ def post_view(request):
     else:
         return redirect('/login/')
 
+def query_based_search_view(request):
+
+    user = check_validation(request)
+    if user:
+        if request.method == "GET":
+            search_form = SearchForm(request.GET)
+            if search_form.is_valid():
+                print 'valid search'
+                username_query = search_form.cleaned_data.get('search_query')
+                print username_query
+                user_with_query = User.objects.filter(username=username_query).first();
+                posts = Post.objects.filter(user=user_with_query)
+                return render(request, 'feed.html', {'posts': posts})
+            else:
+                return redirect('/feed/')
+    else:
+        return redirect('/login/')
+
 def feed_view(request):
     user = check_validation(request)
     if user:
 
-        posts = PostModel.objects.all().order_by('created_on')
+        posts = Post.objects.all().order_by('-created_on')
 
         for post in posts:
             existing_like = LikeModel.objects.filter(post_id=post.id, user=user).first()
@@ -142,7 +159,7 @@ def comment_view(request):
     if user and request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid\
-                    ():
+                  ():
             post_id = form.cleaned_data.get('post').id
             comment_text = form.cleaned_data.get('comment_text')
             comment = CommentModel.objects.create(user=user, post_id=post_id, comment_text=comment_text)
@@ -153,6 +170,17 @@ def comment_view(request):
     else:
         return redirect('/login')
 
+
+def logout_view(request):
+    user = check_validation(request)
+    if user is not None:
+        latest_session = SessionToken.objects.filter(user=user).last()
+        if latest_session:
+            latest_session.delete()
+
+    return redirect("/login/")
+
+
 #Session Validation
 def check_validation(request):
   if request.COOKIES.get('session_token'):
@@ -160,7 +188,7 @@ def check_validation(request):
     if session:
         time_to_live = session.created_on + timedelta(days=1)
         if time_to_live > timezone.now():
-      return session.user
+          return session.user
   else:
     return None
 
